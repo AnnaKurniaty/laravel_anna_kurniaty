@@ -1,0 +1,67 @@
+<?php
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+use App\Models\Pasien;
+use App\Models\RumahSakit;
+
+class PasienController extends Controller
+{
+    public function index()
+    {
+        $rs = RumahSakit::all();
+        $pasiens = Pasien::with('rumahSakit')->paginate(10);
+        return view('pasien.index', compact('pasiens','rs'));
+    }
+
+    public function create()
+    {
+        $rs = RumahSakit::all();
+        return view('pasien.create', compact('rs'));
+    }
+
+    public function store(Request $r)
+    {
+        $r->validate(['nama'=>'required','rumah_sakit_id'=>'required']);
+        Pasien::create($r->all());
+        return redirect()->route('pasien.index')->with('success','Pasien ditambah');
+    }
+
+    public function edit($id)
+    {
+        $rs = RumahSakit::all();
+        $p = Pasien::findOrFail($id);
+        return view('pasien.edit', compact('p','rs'));
+    }
+
+    public function update(Request $r, $id)
+    {
+        $p = Pasien::findOrFail($id);
+        $p->update($r->all());
+        return redirect()->route('pasien.index')->with('success','Diupdate');
+    }
+
+    public function destroy($id)
+    {
+        Pasien::findOrFail($id)->delete();
+        return redirect()->route('pasien.index')->with('success','Dihapus');
+    }
+
+    // AJAX delete
+    public function destroyAjax($id)
+    {
+        Pasien::findOrFail($id)->delete();
+        return response()->json(['status'=>'success']);
+    }
+
+    // AJAX filter by rumah_sakit_id (returns json)
+    public function filter(Request $request)
+    {
+        $id = $request->id;
+        if ($id) {
+            $data = Pasien::with('rumahSakit')->where('rumah_sakit_id',$id)->get();
+        } else {
+            $data = Pasien::with('rumahSakit')->get();
+        }
+        return response()->json($data);
+    }
+}
