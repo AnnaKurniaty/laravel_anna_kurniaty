@@ -5,13 +5,17 @@
   <div class="col-md-5">
     <div class="card">
       <div class="card-body">
-        <h4 class="mb-3">Login</h4>
+        <h4 class="mb-3">Register</h4>
+
+        @if(session('success'))
+          <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
         @if($errors->any())
           <div class="alert alert-danger">{{ $errors->first() }}</div>
         @endif
 
-        <form method="POST" action="{{ route('login.post') }}">
+        <form method="POST" action="{{ route('register.post') }}">
           @csrf
           <div class="mb-3">
             <label class="form-label">Username</label>
@@ -21,13 +25,12 @@
             <label class="form-label">Password</label>
             <input name="password" type="password" class="form-control" required>
           </div>
-          <button class="btn btn-primary w-100">Login</button>
+          <button class="btn btn-primary w-100">Register</button>
         </form>
 
         <div class="mt-3 text-center">
-          <a href="/register">Belum punya akun? Register</a>
+          <a href="{{ route('login') }}">Sudah punya akun? Login</a>
         </div>
-
       </div>
     </div>
   </div>

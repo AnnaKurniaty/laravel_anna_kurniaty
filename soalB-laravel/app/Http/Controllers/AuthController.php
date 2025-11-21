@@ -36,4 +36,25 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+    public function showRegister()
+    {
+        if (Auth::check()) return redirect('/rumahsakit');
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|unique:users,username',
+            'password' => 'required|min:6'
+        ]);
+
+        User::create([
+            'username' => $request->username,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return redirect('/')->with('success', 'Registrasi berhasil! Silakan login.');
+    }
 }

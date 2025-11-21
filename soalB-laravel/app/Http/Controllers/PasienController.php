@@ -46,22 +46,21 @@ class PasienController extends Controller
         return redirect()->route('pasien.index')->with('success','Dihapus');
     }
 
-    // AJAX delete
     public function destroyAjax($id)
     {
         Pasien::findOrFail($id)->delete();
         return response()->json(['status'=>'success']);
     }
 
-    // AJAX filter by rumah_sakit_id (returns json)
     public function filter(Request $request)
     {
         $id = $request->id;
+        $query = Pasien::with('rumahSakit');
+
         if ($id) {
-            $data = Pasien::with('rumahSakit')->where('rumah_sakit_id',$id)->get();
-        } else {
-            $data = Pasien::with('rumahSakit')->get();
+            $query->where('rumah_sakit_id', $id);
         }
+        $data = $query->paginate(20);
         return response()->json($data);
     }
 }
